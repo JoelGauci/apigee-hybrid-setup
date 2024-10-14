@@ -1,0 +1,97 @@
+instanceID: "apigee-hybrid-joggi"
+namespace: apigee # Usually "apigee"
+
+gcp:
+  projectID: <your_gcp_project_id>
+  region: europe-west1
+  workloadIdentity:
+    enabled: true
+
+k8sCluster:
+  name: apigee-hybrid-wingman
+  region: europe-west1 # Must be the closest Google Cloud region to your cluster.
+org: <your_gcp_project_id>
+
+# Required if using Data residency:
+#contractProvider: https://CONTROL_PLANE_LOCATION-apigee.googleapis.com
+
+envs:
+- name: dev
+  gsa:
+    synchronizer: "apigee-synchronizer@<your_gcp_project_id>.iam.gserviceaccount.com"
+      # For example: "apigee-synchronizer@<your_gcp_project_id>.iam.gserviceaccount.com"
+    runtime: "apigee-runtime@<your_gcp_project_id>.iam.gserviceaccount.com"
+      # For example: "apigee-runtime@<your_gcp_project_id>.iam.gserviceaccount.com"
+    udca: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+      # For example: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+cassandra:
+  hostNetwork: false
+    # Set to false for single region installations and multi-region installations
+    # with connectivity between pods in different clusters, for example GKE installations.
+    # Set to true  for multi-region installations with no communication between
+    # pods in different clusters, for example Google Distributed Cloud on VMware or bare metal, GKE on AWS,
+    # AKS, EKS, and OpenShift installations.
+    # See Multi-region deployment: Prerequisites
+  replicaCount: 3
+    # Use multiples of 3 for production.
+    # See Configure Cassandra for production for guidelines.
+  #storage:
+  #  capacity: 500Gi
+  #resources:
+  #  requests:
+  #    cpu: 7
+  #    memory: 15Gi
+  #maxHeapSize: 8192M
+  #heapNewSize: 1200M
+    # Minimum storage requirements for a production environment.
+    # See Configure Cassandra for production.
+  backup:
+    enabled: false
+    # Set to true for initial installation.
+    # This triggers the chart to create the apigee-cassandra-backup Kubernetes service account when you install it.
+    # See Cassandra backup overview for instructions on using cassandra.backup.
+
+ingressGateways:
+- name: apigee-ingress # maximum 17 characters. See Known issue 243167389.
+  replicaCountMin: 2
+  replicaCountMax: 10
+  #svcAnnotations:  # optional. If you are on AKS, see Known issue #260772383
+  #  SVC_ANNOTATIONS_KEY: SVC_ANNOTATIONS_VALUE
+
+virtualhosts:
+- name: dev-group
+  selector:
+    app: apigee-ingressgateway
+    ingress_name: apigee-ingress
+  sslCertPath: certs/keystore_dev-group.pem
+  sslKeyPath: certs/keystore_dev-group.key
+
+mart:
+  gsa: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+connectAgent:
+  gsa: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # Use the same service account for mart and connectAgent
+    # For example: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+logger:
+  enabled: true
+    # enabled by default
+    # See apigee-logger in Service accounts and roles used by hybrid components.
+  gsa: "apigee-logger@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-logger@<your_gcp_project_id>.iam.gserviceaccount.com"
+metrics:
+  gsa: "apigee-metrics@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-metrics@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+udca:
+  gsa: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+watcher:
+  gsa: "apigee-watcher@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-watcher@<your_gcp_project_id>.iam.gserviceaccount.com"
+
+
