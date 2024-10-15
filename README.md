@@ -13,7 +13,7 @@ Doc:		https://cloud.google.com/apigee/docs/hybrid/v1.13/what-is-hybrid
 Important:
 
 - GCP project: <your_gcp_project_id>
-- All commands are executed fron Cloud Shell
+- All commands are executed from Cloud Shell
 
 ## START
 
@@ -34,7 +34,7 @@ https://cloud.google.com/apigee/docs/hybrid/v1.13/cluster-overview#minimum-confi
 
 # Create the cluster (n2-standard-4)
 
-The cluster we create here is regional (europe-west1)
+The cluster we create is regional (europe-west1)
 
 * Number of nodes: ```6```
 * Total vCPUs: ```24```
@@ -153,8 +153,13 @@ curl -H "Authorization: Bearer $TOKEN" -X POST -H "content-type:application/json
 
 curl -H "Authorization: Bearer $TOKEN" \
           "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments"
+```
 
+```
 export DOMAIN="<your_domain>" # e.g. hybrid.iloveapis.io
+```
+
+```
 export ENV_GROUP="dev-group"
 
 curl -H "Authorization: Bearer $TOKEN" -X POST -H "content-type:application/json" \
@@ -370,12 +375,12 @@ cf. [overrides.yaml](overrides.yaml)
 gcloud projects get-iam-policy ${PROJECT_ID}  \
   --flatten="bindings[].members" \
   --format='table(bindings.role)' \
-  --filter="bindings.members:joelgauci@google.com"
+  --filter="bindings.members:<your_email_address>"
 ```
 ### ... If not ....
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member user:joelgauci@google.com \
+  --member user:<your_email_address> \
   --role roles/apigee.admin
 
 export TOKEN=$(gcloud auth print-access-token)
@@ -440,7 +445,7 @@ sudo cp /usr/sbin/helm /usr/local/bin/helm
 
 #### operator / controller
 ```
-hel```m upgrade operator apigee-operator/ \
+helm upgrade operator apigee-operator/ \
   --install \
   --namespace apigee \
   --atomic \
