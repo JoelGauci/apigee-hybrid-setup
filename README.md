@@ -268,7 +268,7 @@ cd apigee-hybrid/helm-charts
 export APIGEE_HELM_CHARTS_HOME=$PWD
 
 export CHART_REPO=oci://us-docker.pkg.dev/apigee-release/apigee-hybrid-helm-charts
-export CHART_VERSION=1.13.1
+export CHART_VERSION=1.14.0
 helm pull $CHART_REPO/apigee-operator --version $CHART_VERSION --untar
 helm pull $CHART_REPO/apigee-datastore --version $CHART_VERSION --untar
 helm pull $CHART_REPO/apigee-env --version $CHART_VERSION --untar
