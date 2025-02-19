@@ -19,7 +19,7 @@ Release Notes: [text](https://cloud.google.com/apigee/docs/hybrid/release-notes)
 Important:
 
 - GCP project: <your_gcp_project_id>
-- All commands are executed fron Cloud Shell
+- All commands are executed from Cloud Shell
 
 ## START Apigee hybrid setup (latest version)
 
@@ -43,7 +43,7 @@ https://cloud.google.com/apigee/docs/hybrid/v1.13/cluster-overview#minimum-confi
 
 # Create the cluster (n2-standard-4)
 
-The cluster we create here is regional (europe-west1)
+The cluster we create is regional (europe-west1)
 
 * Number of nodes: ```6```
 * Total vCPUs: ```24```
@@ -162,8 +162,13 @@ curl -H "Authorization: Bearer $TOKEN" -X POST -H "content-type:application/json
 
 curl -H "Authorization: Bearer $TOKEN" \
           "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/environments"
+```
 
+```
 export DOMAIN="<your_domain>" # e.g. hybrid.iloveapis.io
+```
+
+```
 export ENV_GROUP="dev-group"
 
 curl -H "Authorization: Bearer $TOKEN" -X POST -H "content-type:application/json" \
@@ -397,12 +402,12 @@ rm overrides.template.yaml
 gcloud projects get-iam-policy ${PROJECT_ID}  \
   --flatten="bindings[].members" \
   --format='table(bindings.role)' \
-  --filter="bindings.members:<your-email-address>"
+  --filter="bindings.members:<your_email_address>"
 ```
 ### ... If not ....
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member user:<your-email-address> \
+  --member user:<your_email_address> \
   --role roles/apigee.admin
 ```
 
