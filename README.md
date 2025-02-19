@@ -744,7 +744,9 @@ target: ```https://mocktarget.apigee.net```
 
 curl command:
 ```
-curl https://${DOMAIN}/mock -k -v --resolve ${DOMAIN}:443:<lb_ip>
+export DOMAIN=<ip-address>.nip.io
+
+curl https://${DOMAIN}/mock -k -v
 ```
 
 Better for complete tests:
@@ -773,6 +775,5 @@ curl command:
 curl https://${DOMAIN}/mock \
 -H "x-apikey: ${API_KEY}"  \
 -k \
--v \
---resolve ${DOMAIN}:443:<lb_ip>
+-v
 ```
