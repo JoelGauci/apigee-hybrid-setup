@@ -763,6 +763,39 @@ Using GKE
 
 ...note the IP address: <ip-address>
 
+## Manage runtime plane components
+
+[Manage runtime plane components](https://cloud.google.com/apigee/docs/hybrid/v1.14/customize-services)
+
+Example: modifcation of ```replicaCountMin``` for message processor (runtime)
+
+Add these lines to the ```overrides.yaml```:
+
+```
+runtime:
+  replicaCountMin: 3
+  replicaCountMax: 10
+```
+
+The runtime is scoped at the env level, so an upgrade of env is required:
+
+```
+helm upgrade dev apigee-env/ \
+--install \
+--namespace apigee \
+--set env=dev \
+-f overrides.yaml \
+--dry-run=server
+```
+
+```
+helm upgrade dev apigee-env/ \
+--install \
+--namespace apigee \
+--set env=dev \
+-f overrides.yaml
+```
+
 ## Next Step
 
 Create an API proxy and test !
