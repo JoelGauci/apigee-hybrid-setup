@@ -6,26 +6,35 @@ In Google Cloud, and we create a GCP project for this, plus a GKE cluster...
 
 <your_gcp_project_id>
 
-Version:	1.13.1
+## Versions
 
-Doc:		https://cloud.google.com/apigee/docs/hybrid/v1.13/what-is-hybrid
+Version:  1.14.0
+- Doc:    [text](https://cloud.google.com/apigee/docs/hybrid/v1.14/what-is-hybrid)
+
+Version:	1.13.1
+- Doc:		[text](https://cloud.google.com/apigee/docs/hybrid/v1.13/what-is-hybrid)
+
+Release Notes: [text](https://cloud.google.com/apigee/docs/hybrid/release-notes)
 
 Important:
 
 - GCP project: <your_gcp_project_id>
 - All commands are executed fron Cloud Shell
 
-## START
+## START Apigee hybrid setup (latest version)
 
-
-``` gcloud auth login ```
-
-```
-mkdir apigee-hybrid-1.13.1
-cd apigee-hybrid-1.13.1
+``` 
+gcloud auth login 
 ```
 
-``` export PROJECT_ID=<your_gcp_project_id>```
+```
+mkdir apigee-hybrid-1.14.0
+cd apigee-hybrid-1.14.0
+```
+
+``` 
+export PROJECT_ID=<your_gcp_project_id>
+```
 
 Create a GKE cluster that respects the requirements for non-prod:
 https://cloud.google.com/apigee/docs/hybrid/v1.13/cluster-overview#minimum-configurations
@@ -323,11 +332,6 @@ $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-udca \
   --env prod \
-  --dir $APIGEE_HELM_CHARTS_HOME/apigee-env
-
-$APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
-  --profile apigee-udca \
-  --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-org
 
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
@@ -348,8 +352,11 @@ tree -P *.json
 ```
 mkdir $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/
 
+export DOMAIN=*.nip.io
+
 openssl req  -nodes -new -x509 -keyout $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/keystore_$ENV_GROUP.key -out \
-    $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/keystore_$ENV_GROUP.pem -subj '/CN='$DOMAIN'' -days 3650
+    $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs/keystore_$ENV_GROUP.pem -subj '/CN='$DOMAIN'' -days 3650 \
+    -addext "subjectAltName = DNS:*.nip.io"
 
 ls $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs
 ```
@@ -361,7 +368,27 @@ ls $APIGEE_HELM_CHARTS_HOME/apigee-virtualhost/certs
 gcloud iam service-accounts list --project ${PROJECT_ID} --filter "apigee"
 ```
 
-cf. [overrides.yaml](overrides.yaml)
+cf. [overrides.template.yaml](overrides.template.yaml)
+
+```
+cd $APIGEE_HELM_CHARTS_HOME
+
+git clone https://github.com/JoelGauci/apigee-hybrid-setup.git
+
+mv ./apigee-hybrid-setup/overrides.template.yaml ../
+
+echo $PROJECT_ID
+
+envsubst < overrides.template.yaml > overrides.yaml
+```
+
+### Verify PROJECT_ID env variable has been substituted
+
+```
+vi overrides.yaml
+
+rm overrides.template.yaml
+```
 
 ## Enable synchronyzer access
 
@@ -370,14 +397,18 @@ cf. [overrides.yaml](overrides.yaml)
 gcloud projects get-iam-policy ${PROJECT_ID}  \
   --flatten="bindings[].members" \
   --format='table(bindings.role)' \
-  --filter="bindings.members:joelgauci@google.com"
+  --filter="bindings.members:<your-email-address>"
 ```
 ### ... If not ....
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-  --member user:joelgauci@google.com \
+  --member user:<your-email-address> \
   --role roles/apigee.admin
+```
 
+### Enable Synchronizer access using the Apigee API
+
+```
 export TOKEN=$(gcloud auth print-access-token)
 
 gcloud iam service-accounts list --project ${PROJECT_ID} --filter "apigee-synchronizer"
@@ -392,6 +423,39 @@ curl -X GET -H "Authorization: Bearer $TOKEN" \
   "https://apigee.googleapis.com/v1/organizations/<your_gcp_project_id>:getSyncAuthorization"
 ```   
 
+## Enable analytics publisher access
+
+```
+curl -X  PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type:application/json" \
+  "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/controlPlaneAccess?update_mask=analytics_publisher_identities" \
+  -d "{\"analytics_publisher_identities\": [\"serviceAccount:apigee-runtime@$ORG_NAME.iam.gserviceaccount.com\"]}"
+
+
+curl -X GET -H "Authorization: Bearer $(gcloud auth print-access-token)"  \
+  -H "Content-Type:application/json"  \
+  "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/operations/<LONGRUNNING_ID>"
+```
+
+## Verify the organization's ControlPlaneAccess configuration
+
+```
+curl "https://apigee.googleapis.com/v1/organizations/$ORG_NAME/controlPlaneAccess" \
+-H "Authorization: Bearer $(gcloud auth print-access-token)"
+```
+
+...you must see a response like this one:
+
+```
+{
+  "synchronizerIdentities": [
+    "serviceAccount:apigee-synchronizer@<your-project-id>.iam.gserviceaccount.com"
+  ],
+  "analyticsPublisherIdentities": [
+    "serviceAccount:apigee-runtime@<your-project-id>.iam.gserviceaccount.com"
+  ]
+}
+```
 
 ## START INSTALLATION (Cert Manager + CRDs)
 
@@ -417,6 +481,22 @@ kubectl apply -k  apigee-operator/etc/crds/default/ \
 kubectl get crds | grep apigee
 ```
 
+...you must see a the following CRDs:
+
+```
+apigeedatastores.apigee.cloud.google.com               2025-02-19T11:05:34Z
+apigeedeployments.apigee.cloud.google.com              2025-02-19T11:05:36Z
+apigeeenvironments.apigee.cloud.google.com             2025-02-19T11:05:38Z
+apigeeissues.apigee.cloud.google.com                   2025-02-19T11:05:39Z
+apigeeorganizations.apigee.cloud.google.com            2025-02-19T11:05:41Z
+apigeeredis.apigee.cloud.google.com                    2025-02-19T11:05:44Z
+apigeerouteconfigs.apigee.cloud.google.com             2025-02-19T11:05:44Z
+apigeeroutes.apigee.cloud.google.com                   2025-02-19T11:05:45Z
+apigeetelemetries.apigee.cloud.google.com              2025-02-19T11:05:48Z
+cassandradatareplications.apigee.cloud.google.com      2025-02-19T11:05:53Z
+secretrotations.apigee.cloud.google.com                2025-02-19T11:05:53Z
+```
+
 ## START INSTALLATION (HELM Charts)
 ```
 cd $APIGEE_HELM_CHARTS_HOME
@@ -439,8 +519,9 @@ sudo cp /usr/sbin/helm /usr/local/bin/helm
 ### Using helm for apigee hybrid install
 
 #### operator / controller
+
 ```
-hel```m upgrade operator apigee-operator/ \
+helm upgrade operator apigee-operator/ \
   --install \
   --namespace apigee \
   --atomic \
@@ -476,7 +557,7 @@ kubectl -n apigee get apigeedatastore default
 
 kubectl get pods -n apigee # to get the list of pods and verify the status, access logs...
 ```
-#### For each step : if state = running then go on waiting for the finalization...
+#### For each step : if state = creating then go on waiting for the finalization...
 
 #### telemetry
 ```
@@ -495,6 +576,7 @@ helm upgrade telemetry apigee-telemetry/ \
 
 kubectl -n apigee get apigeetelemetry apigee-telemetry
 ```
+
 #### redis
 ```
 helm upgrade redis apigee-redis/ \
@@ -510,6 +592,7 @@ helm upgrade redis apigee-redis/ \
   --atomic \
   -f overrides.yaml
 ```
+
 #### ingress manager
 ```
 helm upgrade ingress-manager apigee-ingress-manager/ \
@@ -527,6 +610,7 @@ helm upgrade ingress-manager apigee-ingress-manager/ \
 
 kubectl -n apigee get deployment apigee-ingressgateway-manager
 ```
+
 #### organization
 ```
 helm upgrade $ORG_NAME apigee-org/ \
@@ -550,7 +634,6 @@ kubectl -n apigee get apigeeorg
 ```
 
 #### env
-
 ```
 helm upgrade $ENV_NAME apigee-env/ \
   --install \
@@ -601,7 +684,14 @@ gcloud container clusters describe $CLUSTER_NAME \
   --region $CLUSTER_LOCATION \
   --project $PROJECT_ID \
   --flatten 'workloadIdentityConfig'
+```
+>> check:
+```
+---
+workloadPool: <your-project-id>.svc.id.goog
+```
 
+```
 gcloud container node-pools describe apigee-runtime \
   --cluster $CLUSTER_NAME \
   --region $CLUSTER_LOCATION \
@@ -613,8 +703,9 @@ gcloud container node-pools describe apigee-runtime \
 ```
 workloadMetadataConfig:
   mode: GKE_METADATA
+```
 
-
+```
 gcloud container node-pools describe apigee-data \
   --cluster $CLUSTER_NAME \
   --region $CLUSTER_LOCATION \

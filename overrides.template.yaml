@@ -2,7 +2,7 @@ instanceID: "apigee-hybrid-joggi"
 namespace: apigee # Usually "apigee"
 
 gcp:
-  projectID: <your_gcp_project_id>
+  projectID: $PROJECT_ID
   region: europe-west1
   workloadIdentity:
     enabled: true
@@ -10,7 +10,7 @@ gcp:
 k8sCluster:
   name: apigee-hybrid-wingman
   region: europe-west1 # Must be the closest Google Cloud region to your cluster.
-org: <your_gcp_project_id>
+org: $PROJECT_ID
 
 # Required if using Data residency:
 #contractProvider: https://CONTROL_PLANE_LOCATION-apigee.googleapis.com
@@ -18,12 +18,12 @@ org: <your_gcp_project_id>
 envs:
 - name: dev
   gsa:
-    synchronizer: "apigee-synchronizer@<your_gcp_project_id>.iam.gserviceaccount.com"
-      # For example: "apigee-synchronizer@<your_gcp_project_id>.iam.gserviceaccount.com"
-    runtime: "apigee-runtime@<your_gcp_project_id>.iam.gserviceaccount.com"
-      # For example: "apigee-runtime@<your_gcp_project_id>.iam.gserviceaccount.com"
-    udca: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
-      # For example: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+    synchronizer: "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
+      # For example: "apigee-synchronizer@$PROJECT_ID.iam.gserviceaccount.com"
+    runtime: "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
+      # For example: "apigee-runtime@$PROJECT_ID.iam.gserviceaccount.com"
+    udca: "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
+      # For example: "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
 
 cassandra:
   hostNetwork: false
@@ -68,30 +68,30 @@ virtualhosts:
   sslKeyPath: certs/keystore_dev-group.key
 
 mart:
-  gsa: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
-    # For example: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
+    # For example: "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
 
 connectAgent:
-  gsa: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
     # Use the same service account for mart and connectAgent
-    # For example: "apigee-mart@<your_gcp_project_id>.iam.gserviceaccount.com"
+    # For example: "apigee-mart@$PROJECT_ID.iam.gserviceaccount.com"
 
 logger:
   enabled: true
     # enabled by default
     # See apigee-logger in Service accounts and roles used by hybrid components.
-  gsa: "apigee-logger@<your_gcp_project_id>.iam.gserviceaccount.com"
-    # For example: "apigee-logger@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-logger@$PROJECT_ID.iam.gserviceaccount.com"
+    # For example: "apigee-logger@$PROJECT_ID.iam.gserviceaccount.com"
 metrics:
-  gsa: "apigee-metrics@<your_gcp_project_id>.iam.gserviceaccount.com"
-    # For example: "apigee-metrics@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
+    # For example: "apigee-metrics@$PROJECT_ID.iam.gserviceaccount.com"
 
 udca:
-  gsa: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
-    # For example: "apigee-udca@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
+    # For example: "apigee-udca@$PROJECT_ID.iam.gserviceaccount.com"
 
 watcher:
-  gsa: "apigee-watcher@<your_gcp_project_id>.iam.gserviceaccount.com"
-    # For example: "apigee-watcher@<your_gcp_project_id>.iam.gserviceaccount.com"
+  gsa: "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
+    # For example: "apigee-watcher@$PROJECT_ID.iam.gserviceaccount.com"
 
 
