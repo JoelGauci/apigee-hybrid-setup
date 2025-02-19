@@ -9,12 +9,12 @@ In Google Cloud, and we create a GCP project for this, plus a GKE cluster...
 ## Versions
 
 Version:  1.14.0
-- Doc:    [text](https://cloud.google.com/apigee/docs/hybrid/v1.14/what-is-hybrid)
+- Doc:    [1.14](https://cloud.google.com/apigee/docs/hybrid/v1.14/what-is-hybrid)
 
 Version:	1.13.1
-- Doc:		[text](https://cloud.google.com/apigee/docs/hybrid/v1.13/what-is-hybrid)
+- Doc:		[1.13](https://cloud.google.com/apigee/docs/hybrid/v1.13/what-is-hybrid)
 
-Release Notes: [text](https://cloud.google.com/apigee/docs/hybrid/release-notes)
+Release Notes: [Release Notes](https://cloud.google.com/apigee/docs/hybrid/release-notes)
 
 Important:
 
