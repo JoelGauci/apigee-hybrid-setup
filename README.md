@@ -303,42 +303,73 @@ chmod +x $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-accou
 ```
 
 ### Command to create the service accounts:
+
+datastore
+
 ```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-cassandra \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-datastore
+```
 
+logger
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-logger \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-telemetry
+```
 
+mart (management api for runtime)
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-mart \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-org
+```
 
+metrics
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-metrics \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-telemetry
+```
 
+runtime (message processor)
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-runtime \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-env
+```
 
+synchronizer
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-synchronizer \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-env
+```
 
+udca (universal data collector agent)
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-udca \
   --env prod \
   --dir $APIGEE_HELM_CHARTS_HOME/apigee-org
+```
 
+watcher
+
+```
 $APIGEE_HELM_CHARTS_HOME/apigee-operator/etc/tools/create-service-account \
   --profile apigee-watcher \
   --env prod \
@@ -730,7 +761,7 @@ Using GKE
 
 ```kubectl get svc -n apigee -l app=apigee-ingressgateway```
 
-...note the IP address: <lb_ip>
+...note the IP address: <ip-address>
 
 ## Next Step
 
