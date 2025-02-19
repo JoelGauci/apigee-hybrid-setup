@@ -767,7 +767,7 @@ Using GKE
 
 [Manage runtime plane components](https://cloud.google.com/apigee/docs/hybrid/v1.14/customize-services)
 
-Example: modifcation of ```replicaCountMin``` for message processor (runtime)
+Example: modification of ```replicaCountMin``` for message processor (runtime)
 
 Add these lines to the ```overrides.yaml```:
 
